@@ -20,13 +20,13 @@ func main() {
 	source.SetObject("motion", 1)
 
 	filter, _ := gst.ElementFactoryMake("capsfilter", "filter")
-	videoCap := gst.CapsFromString("video/x-raw,width=1280,height=720")
-	filter.SetObject("caps", videoCap)
+	rawVideoCap := gst.CapsFromString("video/x-raw,width=1280,height=720")
+	filter.SetObject("caps", rawVideoCap)
 
 	convert, _ := gst.ElementFactoryMake("x264enc", "x264enc")
 
 	convertFilter, _ := gst.ElementFactoryMake("capsfilter", "convertFilter")
-	h264VideoCap := gst.CapsFromString("video/x-h264,width=1280,height=720")
+	h264VideoCap := gst.CapsFromString("video/x-h264,width=1280,height=720,stream-format=byte-stream")
 	convertFilter.SetObject("caps", h264VideoCap)
 
 	parser, _ := gst.ElementFactoryMake("h264parse", "parser")
@@ -35,9 +35,7 @@ func main() {
 	rtph264pay.SetObject("config-interval", -1)
 	rtph264pay.SetObject("pt", 96)
 
-	sink, _ := gst.ElementFactoryMake("udpsink", "sink")
-	sink.SetObject("host", "0.0.0.0")
-	sink.SetObject("port", 5678)
+	sink, _ := gst.ElementFactoryMake("appsink", "sink")
 
 	pipeline.AddMany(source, filter, convert, convertFilter, parser, rtph264pay, sink)
 
@@ -50,13 +48,11 @@ func main() {
 
 	pipeline.SetState(gst.StatePlaying)
 
-	bus := pipeline.GetBus()
-
 	for {
-		message := bus.Pull(gst.MessageError | gst.MessageEos)
-		fmt.Println("message:", message.GetName())
-		if message.GetType() == gst.MessageEos {
-			break
+		sample, err := sink.PullSample()
+		if err != nil {
+			panic(err)
 		}
+		fmt.Println("got sample", sample.Duration)
 	}
 }
