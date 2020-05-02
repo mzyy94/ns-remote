@@ -7,10 +7,14 @@ import (
 	"github.com/pion/webrtc/v2"
 )
 
-var peerConnection *webrtc.PeerConnection
+// MediaStreamer is..
+type MediaStreamer struct {
+	peerConnection *webrtc.PeerConnection
+	VideoTrack     *webrtc.Track
+}
 
-// SetupWebRTC is..
-func SetupWebRTC() (videoTrack *webrtc.Track) {
+// Setup is ..
+func (m *MediaStreamer) Setup() {
 	// WebRTC setup
 	config := webrtc.Configuration{
 		ICEServers: []webrtc.ICEServer{
@@ -21,21 +25,21 @@ func SetupWebRTC() (videoTrack *webrtc.Track) {
 	}
 
 	var err error
-	peerConnection, err = webrtc.NewPeerConnection(config)
+	m.peerConnection, err = webrtc.NewPeerConnection(config)
 	if err != nil {
 		panic(err)
 	}
 
-	peerConnection.OnICEConnectionStateChange(func(connectionState webrtc.ICEConnectionState) {
+	m.peerConnection.OnICEConnectionStateChange(func(connectionState webrtc.ICEConnectionState) {
 		log.Printf("Connection State has changed %s \n", connectionState.String())
 	})
 
 	// Create a video track
-	videoTrack, err = peerConnection.NewTrack(webrtc.DefaultPayloadTypeH264, rand.Uint32(), "video", "video")
+	m.VideoTrack, err = m.peerConnection.NewTrack(webrtc.DefaultPayloadTypeH264, rand.Uint32(), "video", "video")
 	if err != nil {
 		panic(err)
 	}
-	_, err = peerConnection.AddTrack(videoTrack)
+	_, err = m.peerConnection.AddTrack(m.VideoTrack)
 	if err != nil {
 		panic(err)
 	}
@@ -43,21 +47,21 @@ func SetupWebRTC() (videoTrack *webrtc.Track) {
 }
 
 // CreateAnswerFromOffer is..
-func CreateAnswerFromOffer(offer webrtc.SessionDescription) webrtc.SessionDescription {
+func (m *MediaStreamer) CreateAnswerFromOffer(offer webrtc.SessionDescription) webrtc.SessionDescription {
 	// Set the remote SessionDescription
-	err := peerConnection.SetRemoteDescription(offer)
+	err := m.peerConnection.SetRemoteDescription(offer)
 	if err != nil {
 		panic(err)
 	}
 
 	// Create an answer
-	answer, err := peerConnection.CreateAnswer(nil)
+	answer, err := m.peerConnection.CreateAnswer(nil)
 	if err != nil {
 		panic(err)
 	}
 
 	// Sets the LocalDescription, and starts our UDP listeners
-	err = peerConnection.SetLocalDescription(answer)
+	err = m.peerConnection.SetLocalDescription(answer)
 	if err != nil {
 		panic(err)
 	}
