@@ -1,6 +1,8 @@
 package stream
 
 import (
+	"math"
+
 	"github.com/notedit/gst"
 	"github.com/pion/webrtc/v2"
 	"github.com/pion/webrtc/v2/pkg/media"
@@ -55,7 +57,7 @@ func StartSampleTransfer(track *webrtc.Track) {
 		if err != nil {
 			panic(err)
 		}
-		samples := uint32(90000 * (float32(sample.Duration) / 1000000000))
+		samples := uint32(math.Round(90000 * (float64(sample.Duration) / 1000000000)))
 		if err := track.WriteSample(media.Sample{Data: sample.Data, Samples: samples}); err != nil {
 			panic(err)
 		}
