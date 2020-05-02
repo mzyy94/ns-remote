@@ -1,12 +1,8 @@
 package server
 
 import (
-	"bufio"
-	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"math/rand"
-	"os"
 
 	"github.com/pion/webrtc/v2"
 )
@@ -43,29 +39,6 @@ func SetupWebRTC() (videoTrack *webrtc.Track) {
 	if err != nil {
 		panic(err)
 	}
-
-	fmt.Println("waiting for signal")
-	// Wait for the offer to be pasted
-	offer := webrtc.SessionDescription{}
-
-	in, err := bufio.NewReader(os.Stdin).ReadString('\n')
-	b, err := base64.StdEncoding.DecodeString(in)
-	if err != nil {
-		panic(err)
-	}
-	err = json.Unmarshal(b, &offer)
-	if err != nil {
-		panic(err)
-	}
-
-	answer := CreateAnswerFromOffer(offer)
-
-	// Output the answer in base64 so we can paste it in browser
-	b, err = json.Marshal(answer)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(base64.StdEncoding.EncodeToString(b))
 	return
 }
 

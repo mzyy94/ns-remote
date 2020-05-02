@@ -6,6 +6,7 @@ import (
 )
 
 func main() {
+	server.StartHTTPServer()
 	stream.SetupVideoPipeline()
 	videoTrack := server.SetupWebRTC()
 	stream.StartSampleTransfer(videoTrack)
