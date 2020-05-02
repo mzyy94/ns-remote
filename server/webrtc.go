@@ -24,9 +24,14 @@ func (m *MediaStreamer) Setup() {
 			},
 		},
 	}
+	mediaEngine := webrtc.MediaEngine{}
+	mediaEngine.RegisterCodec(webrtc.NewRTPH264Codec(webrtc.DefaultPayloadTypeH264, 90000))
+	mediaEngine.RegisterCodec(webrtc.NewRTPOpusCodec(webrtc.DefaultPayloadTypeOpus, 48000))
+
+	api := webrtc.NewAPI(webrtc.WithMediaEngine(mediaEngine))
 
 	var err error
-	m.peerConnection, err = webrtc.NewPeerConnection(config)
+	m.peerConnection, err = api.NewPeerConnection(config)
 	if err != nil {
 		panic(err)
 	}
