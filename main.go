@@ -2,8 +2,12 @@ package main
 
 import (
 	"ns-remote/server"
+	"ns-remote/stream"
 )
 
 func main() {
-	server.StartHTTPServer()
+	mediaSource := stream.MediaSource{}
+	mediaSource.Setup()
+
+	server.StartHTTPServer(mediaSource)
 }

@@ -12,6 +12,8 @@ import (
 	"github.com/pion/webrtc/v2"
 )
 
+var mSource stream.MediaSource
+
 func webRTCOfferHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
@@ -26,15 +28,15 @@ func webRTCOfferHandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	mediaSource := stream.MediaSource{}
-	mediaSource.Setup()
-	mediaSource.Link(mStreamer)
+	mSource.Link(mStreamer)
 
 	json.NewEncoder(w).Encode(&answer)
 }
 
 // StartHTTPServer is..
-func StartHTTPServer() {
+func StartHTTPServer(mediaSource stream.MediaSource) {
+	mSource = mediaSource
+
 	r := mux.NewRouter()
 
 	r.HandleFunc("/connect", webRTCOfferHandler).Methods("POST")
