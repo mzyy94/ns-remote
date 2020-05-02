@@ -38,7 +38,6 @@ func (v *VideoPipeline) Setup() {
 			controls := gst.NewStructure("encode")
 			controls.SetValue("h264_profile", 1)
 			controls.SetValue("h264_level", 12)
-			controls.SetValue("repeat_sequence_header", 1)
 			encoder.SetObject("extra-controls", controls)
 		} else {
 			encoder, _ = gst.ElementFactoryMake("x264enc", "encoder")
@@ -51,14 +50,18 @@ func (v *VideoPipeline) Setup() {
 	h264VideoCap := gst.CapsFromString("video/x-h264,width=1280,height=720,stream-format=byte-stream,profile=constrained-baseline")
 	encodeFilter.SetObject("caps", h264VideoCap)
 
+	parser, _ := gst.ElementFactoryMake("h264parse", "parser")
+	parser.SetObject("config-interval", -1)
+
 	sink, _ := gst.ElementFactoryMake("appsink", "sink")
 
-	v.pipeline.AddMany(source, filter, encoder, encodeFilter, sink)
+	v.pipeline.AddMany(source, filter, encoder, encodeFilter, parser, sink)
 
 	source.Link(filter)
 	filter.Link(encoder)
 	encoder.Link(encodeFilter)
-	encodeFilter.Link(sink)
+	encodeFilter.Link(parser)
+	parser.Link(sink)
 
 	v.pipeline.SetState(gst.StatePaused)
 }
