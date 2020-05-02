@@ -13,11 +13,7 @@ func main() {
 	videoPipeline.Setup()
 	audioPipeline.Setup()
 	mStreamer.Setup()
-	go func() {
-		videoPipeline.StartSampleTransfer(mStreamer.VideoTrack)
-	}()
-	go func() {
-		audioPipeline.StartSampleTransfer(mStreamer.AudioTrack)
-	}()
+	go videoPipeline.StartSampleTransfer(mStreamer.VideoTrack)
+	go audioPipeline.StartSampleTransfer(mStreamer.AudioTrack)
 	server.StartHTTPServer(&mStreamer)
 }
