@@ -21,15 +21,13 @@ func WebRTCOfferHandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	videoPipeline := stream.VideoPipeline{}
-	audioPipeline := stream.AudioPipeline{}
+	mediaSource := stream.MediaSource{}
 	mStreamer := stream.WebRTCStreamer{}
 
-	videoPipeline.Setup()
-	audioPipeline.Setup()
+	mediaSource.Setup()
 	mStreamer.Setup(offer)
-	go videoPipeline.StartSampleTransfer(mStreamer.VideoTrack)
-	go audioPipeline.StartSampleTransfer(mStreamer.AudioTrack)
+
+	mediaSource.Link(mStreamer)
 
 	answer := mStreamer.CreateAnswerFromOffer(offer)
 	json.NewEncoder(w).Encode(&answer)
