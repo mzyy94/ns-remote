@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"time"
 
@@ -37,6 +38,6 @@ func StartHTTPServer() {
 	}
 
 	go func() {
-		srv.ListenAndServe()
+		log.Fatal(srv.ListenAndServe())
 	}()
 }

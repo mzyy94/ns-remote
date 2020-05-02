@@ -1,7 +1,7 @@
 package server
 
 import (
-	"fmt"
+	"log"
 	"math/rand"
 
 	"github.com/pion/webrtc/v2"
@@ -27,7 +27,7 @@ func SetupWebRTC() (videoTrack *webrtc.Track) {
 	}
 
 	peerConnection.OnICEConnectionStateChange(func(connectionState webrtc.ICEConnectionState) {
-		fmt.Printf("Connection State has changed %s \n", connectionState.String())
+		log.Printf("Connection State has changed %s \n", connectionState.String())
 	})
 
 	// Create a video track
