@@ -32,7 +32,7 @@ func SetupVideoPipeline() {
 	convert, _ := gst.ElementFactoryMake("x264enc", "x264enc")
 
 	convertFilter, _ := gst.ElementFactoryMake("capsfilter", "convertFilter")
-	h264VideoCap := gst.CapsFromString("video/x-h264,width=1280,height=720,stream-format=byte-stream")
+	h264VideoCap := gst.CapsFromString("video/x-h264,width=1280,height=720,stream-format=byte-stream,profile=constrained-baseline")
 	convertFilter.SetObject("caps", h264VideoCap)
 
 	sink, _ := gst.ElementFactoryMake("appsink", "sink")
