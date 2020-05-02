@@ -29,20 +29,20 @@ func SetupVideoPipeline() {
 	rawVideoCap := gst.CapsFromString("video/x-raw,width=1280,height=720")
 	filter.SetObject("caps", rawVideoCap)
 
-	convert, _ := gst.ElementFactoryMake("x264enc", "x264enc")
+	encoder, _ := gst.ElementFactoryMake("x264enc", "encoder")
 
-	convertFilter, _ := gst.ElementFactoryMake("capsfilter", "convertFilter")
+	encodeFilter, _ := gst.ElementFactoryMake("capsfilter", "encodeFilter")
 	h264VideoCap := gst.CapsFromString("video/x-h264,width=1280,height=720,stream-format=byte-stream,profile=constrained-baseline")
-	convertFilter.SetObject("caps", h264VideoCap)
+	encodeFilter.SetObject("caps", h264VideoCap)
 
 	sink, _ := gst.ElementFactoryMake("appsink", "sink")
 
-	pipeline.AddMany(source, filter, convert, convertFilter, sink)
+	pipeline.AddMany(source, filter, encoder, encodeFilter, sink)
 
 	source.Link(filter)
-	filter.Link(convert)
-	convert.Link(convertFilter)
-	convertFilter.Link(sink)
+	filter.Link(encoder)
+	encoder.Link(encodeFilter)
+	encodeFilter.Link(sink)
 
 	pipeline.SetState(gst.StatePaused)
 }
