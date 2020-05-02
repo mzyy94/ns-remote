@@ -1,6 +1,7 @@
 package server
 
 import (
+	"errors"
 	"log"
 	"math/rand"
 
@@ -41,7 +42,12 @@ func (m *MediaStreamer) Setup() {
 	})
 
 	// Create a video track
-	m.VideoTrack, err = m.peerConnection.NewTrack(webrtc.DefaultPayloadTypeH264, rand.Uint32(), "video", "video")
+	videoCodec, err := findCodecOfType(mediaEngine, webrtc.RTPCodecTypeVideo, webrtc.H264)
+	if err != nil {
+		panic(err)
+	}
+
+	m.VideoTrack, err = m.peerConnection.NewTrack(videoCodec.PayloadType, rand.Uint32(), "video", "video")
 	if err != nil {
 		panic(err)
 	}
@@ -55,7 +61,11 @@ func (m *MediaStreamer) Setup() {
 	}
 
 	// Create a audio track
-	m.AudioTrack, err = m.peerConnection.NewTrack(webrtc.DefaultPayloadTypeOpus, rand.Uint32(), "audio", "audio")
+	audioCodec, err := findCodecOfType(mediaEngine, webrtc.RTPCodecTypeAudio, webrtc.Opus)
+	if err != nil {
+		panic(err)
+	}
+	m.AudioTrack, err = m.peerConnection.NewTrack(audioCodec.PayloadType, rand.Uint32(), "audio", "audio")
 	if err != nil {
 		panic(err)
 	}
@@ -90,4 +100,15 @@ func (m *MediaStreamer) CreateAnswerFromOffer(offer webrtc.SessionDescription) w
 	}
 
 	return answer
+}
+
+// findCodecOfType is..
+func findCodecOfType(mediaEngine webrtc.MediaEngine, kind webrtc.RTPCodecType, codecName string) (*webrtc.RTPCodec, error) {
+	codecs := mediaEngine.GetCodecsByKind(kind)
+	for _, codec := range codecs {
+		if codec.Name == codecName {
+			return codec, nil
+		}
+	}
+	return nil, errors.New("No codec of type " + codecName + " found")
 }
