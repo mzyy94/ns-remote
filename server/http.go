@@ -20,15 +20,16 @@ func webRTCOfferHandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	mediaSource := stream.MediaSource{}
 	mStreamer := stream.WebRTCStreamer{}
+	answer, err := mStreamer.Setup(offer)
+	if err != nil {
+		panic(err)
+	}
 
+	mediaSource := stream.MediaSource{}
 	mediaSource.Setup()
-	mStreamer.Setup(offer)
-
 	mediaSource.Link(mStreamer)
 
-	answer := mStreamer.CreateAnswerFromOffer(offer)
 	json.NewEncoder(w).Encode(&answer)
 }
 

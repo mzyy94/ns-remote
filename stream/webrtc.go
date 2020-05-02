@@ -16,7 +16,7 @@ type WebRTCStreamer struct {
 }
 
 // Setup is ..
-func (m *WebRTCStreamer) Setup(offer webrtc.SessionDescription) {
+func (m *WebRTCStreamer) Setup(offer webrtc.SessionDescription) (*webrtc.SessionDescription, error) {
 	// WebRTC setup
 	config := webrtc.Configuration{
 		ICEServers: []webrtc.ICEServer{
@@ -33,7 +33,7 @@ func (m *WebRTCStreamer) Setup(offer webrtc.SessionDescription) {
 	var err error
 	m.peerConnection, err = api.NewPeerConnection(config)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	m.peerConnection.OnICEConnectionStateChange(func(connectionState webrtc.ICEConnectionState) {
@@ -43,12 +43,12 @@ func (m *WebRTCStreamer) Setup(offer webrtc.SessionDescription) {
 	// Create a video track
 	videoCodec, err := findCodecOfType(mediaEngine, webrtc.RTPCodecTypeVideo, webrtc.H264)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	m.VideoTrack, err = m.peerConnection.NewTrack(videoCodec.PayloadType, rand.Uint32(), "video", "video")
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	_, err = m.peerConnection.AddTransceiverFromTrack(m.VideoTrack,
 		webrtc.RtpTransceiverInit{
@@ -56,17 +56,17 @@ func (m *WebRTCStreamer) Setup(offer webrtc.SessionDescription) {
 		},
 	)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	// Create a audio track
 	audioCodec, err := findCodecOfType(mediaEngine, webrtc.RTPCodecTypeAudio, webrtc.Opus)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	m.AudioTrack, err = m.peerConnection.NewTrack(audioCodec.PayloadType, rand.Uint32(), "audio", "audio")
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	_, err = m.peerConnection.AddTransceiverFromTrack(m.AudioTrack,
 		webrtc.RtpTransceiverInit{
@@ -74,31 +74,28 @@ func (m *WebRTCStreamer) Setup(offer webrtc.SessionDescription) {
 		},
 	)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-}
 
-// CreateAnswerFromOffer is..
-func (m *WebRTCStreamer) CreateAnswerFromOffer(offer webrtc.SessionDescription) webrtc.SessionDescription {
 	// Set the remote SessionDescription
-	err := m.peerConnection.SetRemoteDescription(offer)
+	err = m.peerConnection.SetRemoteDescription(offer)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	// Create an answer
 	answer, err := m.peerConnection.CreateAnswer(nil)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	// Sets the LocalDescription, and starts our UDP listeners
 	err = m.peerConnection.SetLocalDescription(answer)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	return answer
+	return &answer, nil
 }
 
 // findCodecOfType is..
