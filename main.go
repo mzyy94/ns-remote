@@ -6,11 +6,13 @@ import (
 )
 
 func main() {
-	stream.SetupVideoPipeline()
+	videoPipeline := stream.VideoPipeline{}
 	mStreamer := server.MediaStreamer{}
+
+	videoPipeline.Setup()
 	mStreamer.Setup()
 	go func() {
-		stream.StartSampleTransfer(mStreamer.VideoTrack)
+		videoPipeline.StartSampleTransfer(mStreamer.VideoTrack)
 	}()
 	server.StartHTTPServer(&mStreamer)
 }

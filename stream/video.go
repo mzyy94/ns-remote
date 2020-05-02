@@ -8,12 +8,15 @@ import (
 	"github.com/pion/webrtc/v2/pkg/media"
 )
 
-var pipeline *gst.Pipeline
+// VideoPipeline is..
+type VideoPipeline struct {
+	pipeline *gst.Pipeline
+}
 
-// SetupVideoPipeline is..
-func SetupVideoPipeline() {
+// Setup is..
+func (v *VideoPipeline) Setup() {
 	var err error
-	pipeline, err = gst.PipelineNew("video-pipeline")
+	v.pipeline, err = gst.PipelineNew("video-pipeline")
 
 	if err != nil {
 		panic(err)
@@ -37,20 +40,20 @@ func SetupVideoPipeline() {
 
 	sink, _ := gst.ElementFactoryMake("appsink", "sink")
 
-	pipeline.AddMany(source, filter, encoder, encodeFilter, sink)
+	v.pipeline.AddMany(source, filter, encoder, encodeFilter, sink)
 
 	source.Link(filter)
 	filter.Link(encoder)
 	encoder.Link(encodeFilter)
 	encodeFilter.Link(sink)
 
-	pipeline.SetState(gst.StatePaused)
+	v.pipeline.SetState(gst.StatePaused)
 }
 
 // StartSampleTransfer is..
-func StartSampleTransfer(track *webrtc.Track) {
-	pipeline.SetState(gst.StatePlaying)
-	sink := pipeline.GetByName("sink")
+func (v *VideoPipeline) StartSampleTransfer(track *webrtc.Track) {
+	v.pipeline.SetState(gst.StatePlaying)
+	sink := v.pipeline.GetByName("sink")
 
 	for {
 		sample, err := sink.PullSample()
