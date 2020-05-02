@@ -40,7 +40,11 @@ func (m *MediaStreamer) Setup() {
 	if err != nil {
 		panic(err)
 	}
-	_, err = m.peerConnection.AddTrack(m.VideoTrack)
+	_, err = m.peerConnection.AddTransceiverFromTrack(m.VideoTrack,
+		webrtc.RtpTransceiverInit{
+			Direction: webrtc.RTPTransceiverDirectionSendonly,
+		},
+	)
 	if err != nil {
 		panic(err)
 	}
@@ -50,7 +54,11 @@ func (m *MediaStreamer) Setup() {
 	if err != nil {
 		panic(err)
 	}
-	_, err = m.peerConnection.AddTrack(m.AudioTrack)
+	_, err = m.peerConnection.AddTransceiverFromTrack(m.AudioTrack,
+		webrtc.RtpTransceiverInit{
+			Direction: webrtc.RTPTransceiverDirectionSendonly,
+		},
+	)
 	if err != nil {
 		panic(err)
 	}
