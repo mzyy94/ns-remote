@@ -11,6 +11,8 @@ import (
 	"github.com/pion/webrtc/v2"
 )
 
+var peerConnection *webrtc.PeerConnection
+
 // SetupWebRTC is..
 func SetupWebRTC() (videoTrack *webrtc.Track) {
 	// WebRTC setup
@@ -22,7 +24,8 @@ func SetupWebRTC() (videoTrack *webrtc.Track) {
 		},
 	}
 
-	peerConnection, err := webrtc.NewPeerConnection(config)
+	var err error
+	peerConnection, err = webrtc.NewPeerConnection(config)
 	if err != nil {
 		panic(err)
 	}
@@ -55,8 +58,21 @@ func SetupWebRTC() (videoTrack *webrtc.Track) {
 		panic(err)
 	}
 
+	answer := CreateAnswerFromOffer(offer)
+
+	// Output the answer in base64 so we can paste it in browser
+	b, err = json.Marshal(answer)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(base64.StdEncoding.EncodeToString(b))
+	return
+}
+
+// CreateAnswerFromOffer is..
+func CreateAnswerFromOffer(offer webrtc.SessionDescription) webrtc.SessionDescription {
 	// Set the remote SessionDescription
-	err = peerConnection.SetRemoteDescription(offer)
+	err := peerConnection.SetRemoteDescription(offer)
 	if err != nil {
 		panic(err)
 	}
@@ -73,11 +89,5 @@ func SetupWebRTC() (videoTrack *webrtc.Track) {
 		panic(err)
 	}
 
-	// Output the answer in base64 so we can paste it in browser
-	b, err = json.Marshal(answer)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(base64.StdEncoding.EncodeToString(b))
-	return
+	return answer
 }
