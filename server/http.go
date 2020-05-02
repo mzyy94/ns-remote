@@ -23,7 +23,7 @@ func WebRTCOfferHandler(w http.ResponseWriter, r *http.Request) {
 
 	videoPipeline := stream.VideoPipeline{}
 	audioPipeline := stream.AudioPipeline{}
-	mStreamer := MediaStreamer{}
+	mStreamer := stream.WebRTCStreamer{}
 
 	videoPipeline.Setup()
 	audioPipeline.Setup()

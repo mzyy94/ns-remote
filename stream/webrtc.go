@@ -1,4 +1,4 @@
-package server
+package stream
 
 import (
 	"errors"
@@ -8,15 +8,15 @@ import (
 	"github.com/pion/webrtc/v2"
 )
 
-// MediaStreamer is..
-type MediaStreamer struct {
+// WebRTCStreamer is..
+type WebRTCStreamer struct {
 	peerConnection *webrtc.PeerConnection
 	VideoTrack     *webrtc.Track
 	AudioTrack     *webrtc.Track
 }
 
 // Setup is ..
-func (m *MediaStreamer) Setup(offer webrtc.SessionDescription) {
+func (m *WebRTCStreamer) Setup(offer webrtc.SessionDescription) {
 	// WebRTC setup
 	config := webrtc.Configuration{
 		ICEServers: []webrtc.ICEServer{
@@ -79,7 +79,7 @@ func (m *MediaStreamer) Setup(offer webrtc.SessionDescription) {
 }
 
 // CreateAnswerFromOffer is..
-func (m *MediaStreamer) CreateAnswerFromOffer(offer webrtc.SessionDescription) webrtc.SessionDescription {
+func (m *WebRTCStreamer) CreateAnswerFromOffer(offer webrtc.SessionDescription) webrtc.SessionDescription {
 	// Set the remote SessionDescription
 	err := m.peerConnection.SetRemoteDescription(offer)
 	if err != nil {
