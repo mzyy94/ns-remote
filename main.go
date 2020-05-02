@@ -7,13 +7,24 @@ import (
 )
 
 func main() {
-	pipeline, err := gst.ParseLaunch("videotestsrc ! capsfilter caps=video/x-raw,width=1280,height=720 ! autovideosink")
+	pipeline, err := gst.PipelineNew("video-pipeline")
 
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println()
+	source, _ := gst.ElementFactoryMake("videotestsrc", "source")
+
+	filter, _ := gst.ElementFactoryMake("capsfilter", "filter")
+	videoCap := gst.CapsFromString("video/x-raw,width=1280,height=720")
+	filter.SetObject("caps", videoCap)
+
+	sink, _ := gst.ElementFactoryMake("autovideosink", "sink")
+
+	pipeline.AddMany(source, filter, sink)
+
+	source.Link(filter)
+	filter.Link(sink)
 
 	pipeline.SetState(gst.StatePlaying)
 
