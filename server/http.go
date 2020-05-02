@@ -12,8 +12,7 @@ import (
 	"github.com/pion/webrtc/v2"
 )
 
-// WebRTCOfferHandler is..
-func WebRTCOfferHandler(w http.ResponseWriter, r *http.Request) {
+func webRTCOfferHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	var offer webrtc.SessionDescription
@@ -37,7 +36,7 @@ func WebRTCOfferHandler(w http.ResponseWriter, r *http.Request) {
 func StartHTTPServer() {
 	r := mux.NewRouter()
 
-	r.HandleFunc("/connect", WebRTCOfferHandler).Methods("POST")
+	r.HandleFunc("/connect", webRTCOfferHandler).Methods("POST")
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./")))
 	http.Handle("/", r)
 
