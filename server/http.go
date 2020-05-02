@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"time"
 
+	"ns-remote/stream"
+
 	"github.com/gorilla/mux"
 	"github.com/pion/webrtc/v2"
 )
-
-var mStreamer *MediaStreamer
 
 // WebRTCOfferHandler is..
 func WebRTCOfferHandler(w http.ResponseWriter, r *http.Request) {
@@ -20,13 +20,23 @@ func WebRTCOfferHandler(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(&offer); err != nil {
 		panic(err)
 	}
+
+	videoPipeline := stream.VideoPipeline{}
+	audioPipeline := stream.AudioPipeline{}
+	mStreamer := MediaStreamer{}
+
+	videoPipeline.Setup()
+	audioPipeline.Setup()
+	mStreamer.Setup(offer)
+	go videoPipeline.StartSampleTransfer(mStreamer.VideoTrack)
+	go audioPipeline.StartSampleTransfer(mStreamer.AudioTrack)
+
 	answer := mStreamer.CreateAnswerFromOffer(offer)
 	json.NewEncoder(w).Encode(&answer)
 }
 
 // StartHTTPServer is..
-func StartHTTPServer(mediaStreamer *MediaStreamer) {
-	mStreamer = mediaStreamer
+func StartHTTPServer() {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/connect", WebRTCOfferHandler).Methods("POST")

@@ -16,7 +16,7 @@ type MediaStreamer struct {
 }
 
 // Setup is ..
-func (m *MediaStreamer) Setup() {
+func (m *MediaStreamer) Setup(offer webrtc.SessionDescription) {
 	// WebRTC setup
 	config := webrtc.Configuration{
 		ICEServers: []webrtc.ICEServer{
@@ -26,8 +26,7 @@ func (m *MediaStreamer) Setup() {
 		},
 	}
 	mediaEngine := webrtc.MediaEngine{}
-	mediaEngine.RegisterCodec(webrtc.NewRTPH264Codec(webrtc.DefaultPayloadTypeH264, 90000))
-	mediaEngine.RegisterCodec(webrtc.NewRTPOpusCodec(webrtc.DefaultPayloadTypeOpus, 48000))
+	mediaEngine.PopulateFromSDP(offer)
 
 	api := webrtc.NewAPI(webrtc.WithMediaEngine(mediaEngine))
 
