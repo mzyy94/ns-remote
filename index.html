@@ -18,7 +18,12 @@
       });
 
       pc.ontrack = function(event) {
-        document.querySelector("video").srcObject = event.streams[0];
+        const video = document.querySelector("video");
+        if (video.srcObject == null) {
+          video.srcObject = event.streams[0];
+        } else {
+          video.srcObject.addTrack(event.track);
+        }
       };
 
       pc.oniceconnectionstatechange = e => console.log(pc.iceConnectionState);
@@ -41,6 +46,7 @@
       };
 
       pc.addTransceiver("video", { direction: "recvonly" });
+      pc.addTransceiver("audio", { direction: "recvonly" });
 
       pc.createOffer()
         .then(d => pc.setLocalDescription(d))

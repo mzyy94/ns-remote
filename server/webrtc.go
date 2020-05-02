@@ -11,6 +11,7 @@ import (
 type MediaStreamer struct {
 	peerConnection *webrtc.PeerConnection
 	VideoTrack     *webrtc.Track
+	AudioTrack     *webrtc.Track
 }
 
 // Setup is ..
@@ -43,7 +44,16 @@ func (m *MediaStreamer) Setup() {
 	if err != nil {
 		panic(err)
 	}
-	return
+
+	// Create a audio track
+	m.AudioTrack, err = m.peerConnection.NewTrack(webrtc.DefaultPayloadTypeOpus, rand.Uint32(), "audio", "audio")
+	if err != nil {
+		panic(err)
+	}
+	_, err = m.peerConnection.AddTrack(m.AudioTrack)
+	if err != nil {
+		panic(err)
+	}
 }
 
 // CreateAnswerFromOffer is..
