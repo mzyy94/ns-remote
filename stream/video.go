@@ -32,7 +32,20 @@ func (v *VideoPipeline) Setup() {
 	rawVideoCap := gst.CapsFromString("video/x-raw,width=1280,height=720")
 	filter.SetObject("caps", rawVideoCap)
 
-	encoder, _ := gst.ElementFactoryMake("x264enc", "encoder")
+	var encoder *gst.Element
+	if gst.CheckPlugins([]string{"video4linux2"}) == nil {
+		if encoder, err = gst.ElementFactoryMake("v4l2h264enc", "encoder"); err == nil {
+			controls := gst.NewStructure("encode")
+			controls.SetValue("h264_profile", 1)
+			controls.SetValue("h264_level", 12)
+			controls.SetValue("repeat_sequence_header", 1)
+			encoder.SetObject("extra-controls", controls)
+		} else {
+			encoder, _ = gst.ElementFactoryMake("x264enc", "encoder")
+		}
+	} else {
+		encoder, _ = gst.ElementFactoryMake("x264enc", "encoder")
+	}
 
 	encodeFilter, _ := gst.ElementFactoryMake("capsfilter", "encodeFilter")
 	h264VideoCap := gst.CapsFromString("video/x-h264,width=1280,height=720,stream-format=byte-stream,profile=constrained-baseline")
