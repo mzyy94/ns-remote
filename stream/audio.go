@@ -42,18 +42,26 @@ func (a *AudioPipeline) Setup() {
 }
 
 // StartSampleTransfer is..
-func (a *AudioPipeline) StartSampleTransfer(track *webrtc.Track) {
+func (a *AudioPipeline) StartSampleTransfer(track *webrtc.Track, ch chan struct{}) {
 	a.pipeline.SetState(gst.StatePlaying)
 	sink := a.pipeline.GetByName("sink")
 
-	for {
-		sample, err := sink.PullSample()
-		if err != nil {
-			panic(err)
+	go func() {
+		for {
+			sample, err := sink.PullSample()
+			if err != nil {
+				panic(err)
+			}
+			samples := uint32(math.Round(48000 * (float64(sample.Duration) / 1000000000)))
+			if err := track.WriteSample(media.Sample{Data: sample.Data, Samples: samples}); err != nil {
+				panic(err)
+			}
+			select {
+			case <-ch:
+				return
+			default:
+			}
 		}
-		samples := uint32(math.Round(48000 * (float64(sample.Duration) / 1000000000)))
-		if err := track.WriteSample(media.Sample{Data: sample.Data, Samples: samples}); err != nil {
-			panic(err)
-		}
-	}
+	}()
+
 }

@@ -1,11 +1,17 @@
 package stream
 
-import "github.com/notedit/gst"
+import (
+	"log"
+
+	"github.com/notedit/gst"
+)
 
 // MediaSource is..
 type MediaSource struct {
 	videoPipeline *VideoPipeline
 	audioPipeline *AudioPipeline
+	videoChannel  chan struct{}
+	audioChannel  chan struct{}
 }
 
 // Setup is..
@@ -19,8 +25,27 @@ func (p *MediaSource) Setup() {
 
 // Link is..
 func (p *MediaSource) Link(mediaStreamer WebRTCStreamer) {
-	go p.videoPipeline.StartSampleTransfer(mediaStreamer.VideoTrack)
-	go p.audioPipeline.StartSampleTransfer(mediaStreamer.AudioTrack)
+	if p.videoChannel != nil || p.audioChannel != nil {
+		log.Println("Already established")
+		return
+	}
+	p.videoChannel = make(chan struct{})
+	p.audioChannel = make(chan struct{})
+
+	p.videoPipeline.StartSampleTransfer(mediaStreamer.VideoTrack, p.videoChannel)
+	p.audioPipeline.StartSampleTransfer(mediaStreamer.AudioTrack, p.audioChannel)
+}
+
+// Stop is..
+func (p *MediaSource) Stop() {
+	if p.videoChannel == nil || p.audioChannel == nil {
+		log.Println("Connection not established")
+		return
+	}
+	close(p.videoChannel)
+	close(p.audioChannel)
+	p.videoChannel = nil
+	p.audioChannel = nil
 }
 
 // CheckGStreamerPlugins is..

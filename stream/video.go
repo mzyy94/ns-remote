@@ -67,18 +67,26 @@ func (v *VideoPipeline) Setup() {
 }
 
 // StartSampleTransfer is..
-func (v *VideoPipeline) StartSampleTransfer(track *webrtc.Track) {
+func (v *VideoPipeline) StartSampleTransfer(track *webrtc.Track, ch chan struct{}) {
 	v.pipeline.SetState(gst.StatePlaying)
 	sink := v.pipeline.GetByName("sink")
 
-	for {
-		sample, err := sink.PullSample()
-		if err != nil {
-			panic(err)
+	go func() {
+		for {
+			sample, err := sink.PullSample()
+			if err != nil {
+				panic(err)
+			}
+			samples := uint32(math.Round(90000 * (float64(sample.Duration) / 1000000000)))
+			if err := track.WriteSample(media.Sample{Data: sample.Data, Samples: samples}); err != nil {
+				panic(err)
+			}
+			select {
+			case <-ch:
+				return
+			default:
+			}
 		}
-		samples := uint32(math.Round(90000 * (float64(sample.Duration) / 1000000000)))
-		if err := track.WriteSample(media.Sample{Data: sample.Data, Samples: samples}); err != nil {
-			panic(err)
-		}
-	}
+	}()
+
 }
