@@ -395,4 +395,15 @@ const init = () => {
   });
 };
 
-document.addEventListener("DOMContentLoaded", init);
+const setup = () => {
+  setTimeout(() => {
+    if (window.innerWidth / window.innerHeight > 1) {
+      init();
+      window.removeEventListener("orientationchange", setup);
+    }
+    // Waiting for innerWidth/innerHeight change
+  }, 500);
+};
+
+document.addEventListener("DOMContentLoaded", setup);
+window.addEventListener("orientationchange", setup);
