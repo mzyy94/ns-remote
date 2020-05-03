@@ -46,6 +46,7 @@ func StartHTTPServer(mediaSource stream.MediaSource) {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/connect", webRTCOfferHandler).Methods("POST")
+	r.HandleFunc("/controller", controllerHandler)
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./")))
 	http.Handle("/", r)
 
