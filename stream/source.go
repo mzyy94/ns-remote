@@ -70,6 +70,7 @@ func startSampleTransfer(pipeline *gst.Pipeline, track *webrtc.Track, ch chan st
 			}
 			select {
 			case <-ch:
+				pipeline.SetState(gst.StateNull)
 				return
 			default:
 			}
