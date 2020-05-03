@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/notedit/gst"
+	"github.com/pion/webrtc/v2"
 )
 
 // MediaSource is..
@@ -34,6 +35,12 @@ func (p *MediaSource) Link(mediaStreamer WebRTCStreamer) {
 
 	p.videoPipeline.StartSampleTransfer(mediaStreamer.VideoTrack, p.videoChannel)
 	p.audioPipeline.StartSampleTransfer(mediaStreamer.AudioTrack, p.audioChannel)
+
+	mediaStreamer.peerConnection.OnConnectionStateChange(func(connectionState webrtc.PeerConnectionState) {
+		if connectionState == webrtc.PeerConnectionStateClosed {
+			p.Stop()
+		}
+	})
 }
 
 // Stop is..

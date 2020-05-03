@@ -1,6 +1,7 @@
 package stream
 
 import (
+	"log"
 	"math"
 
 	"github.com/notedit/gst"
@@ -54,7 +55,7 @@ func (a *AudioPipeline) StartSampleTransfer(track *webrtc.Track, ch chan struct{
 			}
 			samples := uint32(math.Round(48000 * (float64(sample.Duration) / 1000000000)))
 			if err := track.WriteSample(media.Sample{Data: sample.Data, Samples: samples}); err != nil {
-				panic(err)
+				log.Println(err)
 			}
 			select {
 			case <-ch:
