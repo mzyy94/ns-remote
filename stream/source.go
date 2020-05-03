@@ -3,6 +3,7 @@ package stream
 import (
 	"log"
 	"math"
+	"sync"
 
 	"github.com/notedit/gst"
 	"github.com/pion/webrtc/v2"
@@ -15,6 +16,8 @@ type MediaSource struct {
 	audioPipeline *AudioPipeline
 	videoChannel  chan struct{}
 	audioChannel  chan struct{}
+	waitGroup     sync.WaitGroup
+	mutex         sync.Mutex
 	IsLinked      bool
 }
 
@@ -27,14 +30,16 @@ func NewMediaSource() (p MediaSource) {
 
 // Link is..
 func (p *MediaSource) Link(mediaStreamer WebRTCStreamer) {
+	defer p.mutex.Unlock()
+	p.mutex.Lock()
 	if p.IsLinked {
 		return
 	}
 	p.videoChannel = make(chan struct{})
 	p.audioChannel = make(chan struct{})
 
-	startSampleTransfer(p.videoPipeline, mediaStreamer.VideoTrack, p.videoChannel)
-	startSampleTransfer(p.audioPipeline, mediaStreamer.AudioTrack, p.audioChannel)
+	startSampleTransfer(p.videoPipeline, mediaStreamer.VideoTrack, p.videoChannel, &p.waitGroup)
+	startSampleTransfer(p.audioPipeline, mediaStreamer.AudioTrack, p.audioChannel, &p.waitGroup)
 
 	mediaStreamer.peerConnection.OnConnectionStateChange(func(connectionState webrtc.PeerConnectionState) {
 		if connectionState == webrtc.PeerConnectionStateClosed {
@@ -46,22 +51,29 @@ func (p *MediaSource) Link(mediaStreamer WebRTCStreamer) {
 
 // Unlink is..
 func (p *MediaSource) Unlink() {
-	if p.videoChannel != nil {
-		close(p.videoChannel)
-		p.videoChannel = nil
+	defer p.mutex.Unlock()
+	p.mutex.Lock()
+	if !p.IsLinked {
+		return
 	}
-	if p.audioChannel != nil {
-		close(p.audioChannel)
-		p.audioChannel = nil
-	}
+
+	close(p.videoChannel)
+	close(p.audioChannel)
+	p.waitGroup.Wait()
 	p.IsLinked = false
 }
 
-func startSampleTransfer(pipeline *gst.Pipeline, track *webrtc.Track, stop chan struct{}) {
+func startSampleTransfer(pipeline *gst.Pipeline, track *webrtc.Track, stop chan struct{}, waitGroup *sync.WaitGroup) {
 	pipeline.SetState(gst.StatePlaying)
 	sink := pipeline.GetByName("sink")
+	waitGroup.Add(1)
 
 	go func() {
+		defer func() {
+			pipeline.SetState(gst.StateNull)
+			waitGroup.Done()
+		}()
+
 		for {
 			sample, err := sink.PullSample()
 			if err != nil {
@@ -69,7 +81,6 @@ func startSampleTransfer(pipeline *gst.Pipeline, track *webrtc.Track, stop chan 
 			}
 			select {
 			case <-stop:
-				pipeline.SetState(gst.StateNull)
 				return
 			default:
 				samples := uint32(math.Round(float64(track.Codec().ClockRate) * (float64(sample.Duration) / 1000000000)))
