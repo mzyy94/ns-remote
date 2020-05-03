@@ -1,12 +1,7 @@
 package stream
 
 import (
-	"log"
-	"math"
-
 	"github.com/notedit/gst"
-	"github.com/pion/webrtc/v2"
-	"github.com/pion/webrtc/v2/pkg/media"
 )
 
 // AudioPipeline is..
@@ -40,29 +35,4 @@ func (a *AudioPipeline) Setup() {
 	encoder.Link(sink)
 
 	a.pipeline.SetState(gst.StatePaused)
-}
-
-// StartSampleTransfer is..
-func (a *AudioPipeline) StartSampleTransfer(track *webrtc.Track, ch chan struct{}) {
-	a.pipeline.SetState(gst.StatePlaying)
-	sink := a.pipeline.GetByName("sink")
-
-	go func() {
-		for {
-			sample, err := sink.PullSample()
-			if err != nil {
-				panic(err)
-			}
-			samples := uint32(math.Round(48000 * (float64(sample.Duration) / 1000000000)))
-			if err := track.WriteSample(media.Sample{Data: sample.Data, Samples: samples}); err != nil {
-				log.Println(err)
-			}
-			select {
-			case <-ch:
-				return
-			default:
-			}
-		}
-	}()
-
 }
