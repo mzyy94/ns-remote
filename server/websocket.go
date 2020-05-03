@@ -19,7 +19,12 @@ func controllerHandler(w http.ResponseWriter, r *http.Request) {
 	for {
 		_, message, err := c.ReadMessage()
 		if err != nil {
-			log.Println("WebSocket read error:", err)
+			switch e := err.(type) {
+			case *websocket.CloseError:
+				log.Println("WebSocket closed:", e.Code)
+			default:
+				log.Println("WebSocket read error:", e)
+			}
 			break
 		}
 		log.Printf("WebSocket recv data: %s", message)
