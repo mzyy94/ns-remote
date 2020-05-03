@@ -64,15 +64,15 @@ func startSampleTransfer(pipeline *gst.Pipeline, track *webrtc.Track, ch chan st
 			if err != nil {
 				panic(err)
 			}
-			samples := uint32(math.Round(float64(track.Codec().ClockRate) * (float64(sample.Duration) / 1000000000)))
-			if err := track.WriteSample(media.Sample{Data: sample.Data, Samples: samples}); err != nil {
-				log.Println(err)
-			}
 			select {
 			case <-ch:
 				pipeline.SetState(gst.StateNull)
 				return
 			default:
+				samples := uint32(math.Round(float64(track.Codec().ClockRate) * (float64(sample.Duration) / 1000000000)))
+				if err := track.WriteSample(media.Sample{Data: sample.Data, Samples: samples}); err != nil {
+					log.Println(err)
+				}
 			}
 		}
 	}()
