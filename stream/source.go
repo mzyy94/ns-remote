@@ -15,6 +15,7 @@ type MediaSource struct {
 	audioPipeline *AudioPipeline
 	videoChannel  chan struct{}
 	audioChannel  chan struct{}
+	IsLinked      bool
 }
 
 // NewMediaSource is..
@@ -26,8 +27,7 @@ func NewMediaSource() (p MediaSource) {
 
 // Link is..
 func (p *MediaSource) Link(mediaStreamer WebRTCStreamer) {
-	if p.videoChannel != nil || p.audioChannel != nil {
-		log.Println("Already established")
+	if p.IsLinked {
 		return
 	}
 	p.videoChannel = make(chan struct{})
@@ -38,13 +38,14 @@ func (p *MediaSource) Link(mediaStreamer WebRTCStreamer) {
 
 	mediaStreamer.peerConnection.OnConnectionStateChange(func(connectionState webrtc.PeerConnectionState) {
 		if connectionState == webrtc.PeerConnectionStateClosed {
-			p.Stop()
+			p.Unlink()
 		}
 	})
+	p.IsLinked = true
 }
 
-// Stop is..
-func (p *MediaSource) Stop() {
+// Unlink is..
+func (p *MediaSource) Unlink() {
 	if p.videoChannel != nil {
 		close(p.videoChannel)
 		p.videoChannel = nil
@@ -53,6 +54,7 @@ func (p *MediaSource) Stop() {
 		close(p.audioChannel)
 		p.audioChannel = nil
 	}
+	p.IsLinked = false
 }
 
 func startSampleTransfer(pipeline *gst.Pipeline, track *webrtc.Track, stop chan struct{}) {
