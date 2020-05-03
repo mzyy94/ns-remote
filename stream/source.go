@@ -17,10 +17,11 @@ type MediaSource struct {
 	audioChannel  chan struct{}
 }
 
-// Setup is..
-func (p *MediaSource) Setup() {
+// NewMediaSource is..
+func NewMediaSource() (p MediaSource) {
 	p.videoPipeline = NewVideoPipeline()
 	p.audioPipeline = NewAudioPipeline()
+	return
 }
 
 // Link is..

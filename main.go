@@ -11,8 +11,7 @@ func main() {
 	if err := stream.CheckGStreamerPlugins(); err != nil {
 		log.Fatal(err)
 	}
-	mediaSource := stream.MediaSource{}
-	mediaSource.Setup()
+	mediaSource := stream.NewMediaSource()
 
 	server.StartHTTPServer(mediaSource)
 }
