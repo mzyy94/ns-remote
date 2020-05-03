@@ -33,12 +33,15 @@
             method: "POST",
             body: JSON.stringify(pc.localDescription)
           })
-            .then(response => response.json())
-            .then(answer => {
+            .then(res => Promise.all([res.json(), res.ok]))
+            .then(([answer, ok]) => {
+              if (!ok) {
+                return Promise.reject(answer);
+              }
               try {
                 pc.setRemoteDescription(new RTCSessionDescription(answer));
               } catch (e) {
-                alert(e);
+                Promise.reject(e);
               }
             })
             .catch(console.error);
