@@ -4,7 +4,7 @@ const active = 0.5;
 const inactive = 0.3;
 
 class ABXY extends PIXI.Graphics {
-  constructor(app) {
+  constructor(app, x, y) {
     const abxy = super();
 
     const r = 30;
@@ -35,6 +35,8 @@ class ABXY extends PIXI.Graphics {
     }
 
     app.stage.addChild(abxy);
+    this.transform.position.x = x;
+    this.transform.position.y = y;
   }
 
   pointerDown(label, button) {
@@ -49,7 +51,7 @@ class ABXY extends PIXI.Graphics {
 }
 
 class Button extends PIXI.Graphics {
-  constructor(app, label) {
+  constructor(app, label, x, y) {
     const button = super();
 
     this.input = { [label]: 0 };
@@ -69,6 +71,8 @@ class Button extends PIXI.Graphics {
       .on("pointerupoutside", this.pointerUp.bind(this, label));
 
     app.stage.addChild(button);
+    this.transform.position.x = x;
+    this.transform.position.y = y;
   }
 
   pointerDown(label) {
@@ -83,7 +87,7 @@ class Button extends PIXI.Graphics {
 }
 
 class Triggers extends PIXI.Graphics {
-  constructor(app, labels) {
+  constructor(app, labels, x, y) {
     const triggers = super();
 
     this.input = { [labels[0]]: 0, [labels[1]]: 0 };
@@ -113,6 +117,8 @@ class Triggers extends PIXI.Graphics {
       triggers.addChild(trigger);
     }
     app.stage.addChild(triggers);
+    this.transform.position.x = x;
+    this.transform.position.y = y;
   }
 
   pointerDown(label, trigger) {
@@ -127,7 +133,7 @@ class Triggers extends PIXI.Graphics {
 }
 
 class Joystick extends PIXI.Graphics {
-  constructor(app) {
+  constructor(app, x, y) {
     const outer = super();
 
     this.input = { x: 0, y: 0 };
@@ -158,6 +164,9 @@ class Joystick extends PIXI.Graphics {
 
     outer.addChild(inner);
     app.stage.addChild(outer);
+
+    this.transform.position.x = x;
+    this.transform.position.y = y;
   }
 
   pointerDown(event) {
@@ -199,7 +208,7 @@ class Joystick extends PIXI.Graphics {
 }
 
 class DPad extends PIXI.Graphics {
-  constructor(app) {
+  constructor(app, x, y) {
     const dpad = super();
 
     this.input = { right: 0, up: 0, down: 0, left: 0 };
@@ -282,6 +291,9 @@ class DPad extends PIXI.Graphics {
       .on("pointermove", this.pointerMove);
 
     app.stage.addChild(dpad);
+
+    this.transform.position.x = x;
+    this.transform.position.y = y;
   }
 
   pointerDown(event) {
@@ -332,49 +344,24 @@ const init = () => {
 
   const clientWidth = document.body.clientWidth;
 
-  const leftJoy = new Joystick(app);
-  leftJoy.transform.position.x = 80;
-  leftJoy.transform.position.y = 30;
-
-  const rightJoy = new Joystick(app);
+  const leftJoy = new Joystick(app, 80, 30);
+  const rightJoy = new Joystick(app, 0, 160);
   rightJoy.transform.position.x = clientWidth - 50 - rightJoy.config.outer * 2;
-  rightJoy.transform.position.y = 160;
 
-  const abxy = new ABXY(app);
-  abxy.transform.position.x = clientWidth - 100 - rightJoy.config.outer * 2;
-  abxy.transform.position.y = 10;
+  const abxy = new ABXY(app, clientWidth - 100 - rightJoy.config.outer * 2, 10);
+  const dpad = new DPad(app, 60, 220);
 
-  const dpad = new DPad(app);
-  dpad.transform.position.x = 60;
-  dpad.transform.position.y = 220;
-
-  const leftTriggers = new Triggers(app, ["l", "zl"]);
-  leftTriggers.transform.position.x = 10;
-  leftTriggers.transform.position.y = 0;
-
-  const rightTriggers = new Triggers(app, ["r", "zr"]);
+  const leftTriggers = new Triggers(app, ["l", "zl"], 10, 0);
+  const rightTriggers = new Triggers(app, ["r", "zr"], 0, 0);
   rightTriggers.transform.position.x =
     clientWidth - 10 - rightTriggers.config[0].w;
-  rightTriggers.transform.position.y = 0;
 
-  const plus = new Button(app, "plus");
-  plus.transform.position.x = clientWidth - 300;
-  plus.transform.position.y = 50;
+  const plus = new Button(app, "plus", clientWidth - 300, 50);
+  const minus = new Button(app, "minus", 300, 50);
+  const capture = new Button(app, "capture", 300, 150);
+  const home = new Button(app, "home", clientWidth - 300, 150);
 
-  const minus = new Button(app, "minus");
-  minus.transform.position.x = 300;
-  minus.transform.position.y = 50;
-
-  const capture = new Button(app, "capture");
-  capture.transform.position.x = 300;
-  capture.transform.position.y = 150;
-
-  const home = new Button(app, "home");
-  home.transform.position.x = clientWidth - 300;
-  home.transform.position.y = 150;
-
-  let socket;
-  socket = new WebSocket(`ws://${location.host}/controller`);
+  const socket = new WebSocket(`ws://${location.host}/controller`);
 
   let requestId;
 
