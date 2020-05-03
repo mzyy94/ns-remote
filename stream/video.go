@@ -5,14 +5,11 @@ import (
 )
 
 // VideoPipeline is..
-type VideoPipeline struct {
-	pipeline *gst.Pipeline
-}
+type VideoPipeline = gst.Pipeline
 
-// Setup is..
-func (v *VideoPipeline) Setup() {
-	var err error
-	v.pipeline, err = gst.PipelineNew("video-pipeline")
+// NewVideoPipeline is..
+func NewVideoPipeline() *VideoPipeline {
+	pipeline, err := gst.PipelineNew("video-pipeline")
 
 	if err != nil {
 		panic(err)
@@ -51,7 +48,7 @@ func (v *VideoPipeline) Setup() {
 
 	sink, _ := gst.ElementFactoryMake("appsink", "sink")
 
-	v.pipeline.AddMany(source, filter, encoder, encodeFilter, parser, sink)
+	pipeline.AddMany(source, filter, encoder, encodeFilter, parser, sink)
 
 	source.Link(filter)
 	filter.Link(encoder)
@@ -59,5 +56,6 @@ func (v *VideoPipeline) Setup() {
 	encodeFilter.Link(parser)
 	parser.Link(sink)
 
-	v.pipeline.SetState(gst.StatePaused)
+	pipeline.SetState(gst.StatePaused)
+	return pipeline
 }

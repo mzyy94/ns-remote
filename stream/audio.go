@@ -5,14 +5,11 @@ import (
 )
 
 // AudioPipeline is..
-type AudioPipeline struct {
-	pipeline *gst.Pipeline
-}
+type AudioPipeline = gst.Pipeline
 
-// Setup is..
-func (a *AudioPipeline) Setup() {
-	var err error
-	a.pipeline, err = gst.PipelineNew("audio-pipeline")
+// NewAudioPipeline is..
+func NewAudioPipeline() *AudioPipeline {
+	pipeline, err := gst.PipelineNew("audio-pipeline")
 
 	if err != nil {
 		panic(err)
@@ -27,12 +24,13 @@ func (a *AudioPipeline) Setup() {
 
 	sink, _ := gst.ElementFactoryMake("appsink", "sink")
 
-	a.pipeline.AddMany(source, convert, resample, encoder, sink)
+	pipeline.AddMany(source, convert, resample, encoder, sink)
 
 	source.Link(convert)
 	convert.Link(resample)
 	resample.Link(encoder)
 	encoder.Link(sink)
 
-	a.pipeline.SetState(gst.StatePaused)
+	pipeline.SetState(gst.StatePaused)
+	return pipeline
 }

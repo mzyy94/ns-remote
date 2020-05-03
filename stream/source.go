@@ -19,11 +19,8 @@ type MediaSource struct {
 
 // Setup is..
 func (p *MediaSource) Setup() {
-	p.videoPipeline = new(VideoPipeline)
-	p.audioPipeline = new(AudioPipeline)
-
-	p.videoPipeline.Setup()
-	p.audioPipeline.Setup()
+	p.videoPipeline = NewVideoPipeline()
+	p.audioPipeline = NewAudioPipeline()
 }
 
 // Link is..
@@ -35,8 +32,8 @@ func (p *MediaSource) Link(mediaStreamer WebRTCStreamer) {
 	p.videoChannel = make(chan struct{})
 	p.audioChannel = make(chan struct{})
 
-	startSampleTransfer(p.videoPipeline.pipeline, mediaStreamer.VideoTrack, p.videoChannel)
-	startSampleTransfer(p.audioPipeline.pipeline, mediaStreamer.AudioTrack, p.audioChannel)
+	startSampleTransfer(p.videoPipeline, mediaStreamer.VideoTrack, p.videoChannel)
+	startSampleTransfer(p.audioPipeline, mediaStreamer.AudioTrack, p.audioChannel)
 
 	mediaStreamer.peerConnection.OnConnectionStateChange(func(connectionState webrtc.PeerConnectionState) {
 		if connectionState == webrtc.PeerConnectionStateClosed {
