@@ -45,17 +45,17 @@ func (p *MediaSource) Link(mediaStreamer WebRTCStreamer) {
 
 // Stop is..
 func (p *MediaSource) Stop() {
-	if p.videoChannel == nil || p.audioChannel == nil {
-		log.Println("Connection not established")
-		return
+	if p.videoChannel != nil {
+		close(p.videoChannel)
+		p.videoChannel = nil
 	}
-	close(p.videoChannel)
-	close(p.audioChannel)
-	p.videoChannel = nil
-	p.audioChannel = nil
+	if p.audioChannel != nil {
+		close(p.audioChannel)
+		p.audioChannel = nil
+	}
 }
 
-func startSampleTransfer(pipeline *gst.Pipeline, track *webrtc.Track, ch chan struct{}) {
+func startSampleTransfer(pipeline *gst.Pipeline, track *webrtc.Track, stop chan struct{}) {
 	pipeline.SetState(gst.StatePlaying)
 	sink := pipeline.GetByName("sink")
 
@@ -66,7 +66,7 @@ func startSampleTransfer(pipeline *gst.Pipeline, track *webrtc.Track, ch chan st
 				panic(err)
 			}
 			select {
-			case <-ch:
+			case <-stop:
 				pipeline.SetState(gst.StateNull)
 				return
 			default:
