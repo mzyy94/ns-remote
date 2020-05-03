@@ -9,11 +9,7 @@ type VideoPipeline = gst.Pipeline
 
 // NewVideoPipeline is..
 func NewVideoPipeline() *VideoPipeline {
-	pipeline, err := gst.PipelineNew("video-pipeline")
-
-	if err != nil {
-		panic(err)
-	}
+	pipeline, _ := gst.PipelineNew("video-pipeline")
 
 	source, _ := gst.ElementFactoryMake("videotestsrc", "source")
 	source.SetObject("is-live", true)
@@ -27,6 +23,7 @@ func NewVideoPipeline() *VideoPipeline {
 
 	var encoder *gst.Element
 	if gst.CheckPlugins([]string{"video4linux2"}) == nil {
+		var err error
 		if encoder, err = gst.ElementFactoryMake("v4l2h264enc", "encoder"); err == nil {
 			controls := gst.NewStructure("encode")
 			controls.SetValue("h264_profile", 1)

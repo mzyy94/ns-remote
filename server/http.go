@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -15,21 +16,23 @@ import (
 var mSource stream.MediaSource
 
 func webRTCOfferHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-
 	var offer webrtc.SessionDescription
 	if err := json.NewDecoder(r.Body).Decode(&offer); err != nil {
-		panic(err)
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "{\"error\": \"%s\"}", err.Error())
+		return
 	}
 
 	mStreamer := stream.WebRTCStreamer{}
 	answer, err := mStreamer.Setup(offer)
 	if err != nil {
-		panic(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "{\"error\": \"%s\"}", err.Error())
 	}
 
 	mSource.Link(mStreamer)
 
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(&answer)
 }
 

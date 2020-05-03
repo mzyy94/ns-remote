@@ -9,11 +9,7 @@ type AudioPipeline = gst.Pipeline
 
 // NewAudioPipeline is..
 func NewAudioPipeline() *AudioPipeline {
-	pipeline, err := gst.PipelineNew("audio-pipeline")
-
-	if err != nil {
-		panic(err)
-	}
+	pipeline, _ := gst.PipelineNew("audio-pipeline")
 
 	source, _ := gst.ElementFactoryMake("audiotestsrc", "source")
 	source.SetObject("is-live", true)
