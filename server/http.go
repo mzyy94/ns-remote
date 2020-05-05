@@ -10,6 +10,7 @@ import (
 	"ns-remote/stream"
 
 	"github.com/gorilla/mux"
+	"github.com/mzyy94/nscon"
 	"github.com/pion/webrtc/v2"
 )
 
@@ -40,8 +41,9 @@ func webRTCOfferHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // StartHTTPServer is..
-func StartHTTPServer(mediaSource *stream.MediaSource) {
+func StartHTTPServer(mediaSource *stream.MediaSource, con *nscon.Controller) {
 	mSource = mediaSource
+	controller = con
 
 	r := mux.NewRouter()
 

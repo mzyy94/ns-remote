@@ -24,6 +24,8 @@ github.com/lucas-clemente/quic-go v0.7.1-0.20190401152353-907071221cf9 h1:tbuodU
 github.com/lucas-clemente/quic-go v0.7.1-0.20190401152353-907071221cf9/go.mod h1:PpMmPfPKO9nKJ/psF49ESTAGQSdfXxlg1otPbEB2nOw=
 github.com/marten-seemann/qtls v0.2.3 h1:0yWJ43C62LsZt08vuQJDK1uC1czUc3FJeCLPoNAI4vA=
 github.com/marten-seemann/qtls v0.2.3/go.mod h1:xzjG7avBwGGbdZ8dTGxlBnLArsVKLvwmjgmPuiQEcYk=
+github.com/mzyy94/nscon v0.0.0-20200505130706-83a123962216 h1:9X5xhSAd+WeUAa51oQ/wpZVLtVzdcn/sfDYLIsAqK7w=
+github.com/mzyy94/nscon v0.0.0-20200505130706-83a123962216/go.mod h1:5XyHX0uDmuhaKIDkJz+Xi4BK027IcrLswlzNjg6x7L0=
 github.com/notedit/gst v0.0.4 h1:n47Z8utCJX+4Tjm8r4yFWVnf/S8tab6MlSfBhVrQodk=
 github.com/notedit/gst v0.0.4/go.mod h1:99yZ0oIrCg0xd2a1rn/1cjcUAHLAGTDxXLD1FQ5NpoM=
 github.com/onsi/ginkgo v1.6.0/go.mod h1:lLunBs/Ym6LB5Z9jYTR76FiuTmxDTDusOGeTQH+WWjE=

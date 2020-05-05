@@ -1,13 +1,16 @@
 package server
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/websocket"
+	"github.com/mzyy94/nscon"
 )
 
 var upgrader = websocket.Upgrader{}
+var controller *nscon.Controller
 
 func controllerHandler(w http.ResponseWriter, r *http.Request) {
 	c, err := upgrader.Upgrade(w, r, nil)
@@ -16,6 +19,10 @@ func controllerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer c.Close()
+
+	defer controller.Close()
+	controller.Connect()
+
 	for {
 		_, message, err := c.ReadMessage()
 		if err != nil {
@@ -27,6 +34,6 @@ func controllerHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			break
 		}
-		log.Printf("WebSocket recv data: %s", message)
+		json.Unmarshal(message, &controller.Input)
 	}
 }
