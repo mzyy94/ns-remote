@@ -22,7 +22,7 @@ type MediaSource struct {
 }
 
 // NewMediaSource is..
-func NewMediaSource(videosrc, audiosrc string) *MediaSource {
+func NewMediaSource(videosrc, audiosrc *string) *MediaSource {
 	return &MediaSource{
 		videoPipeline: NewVideoPipeline(videosrc),
 		audioPipeline: NewAudioPipeline(audiosrc),

@@ -8,15 +8,19 @@ import (
 type VideoPipeline = gst.Pipeline
 
 // NewVideoPipeline is..
-func NewVideoPipeline(videosrc string) *VideoPipeline {
+func NewVideoPipeline(device *string) *VideoPipeline {
 	pipeline, _ := gst.PipelineNew("video-pipeline")
 
-	source, _ := gst.ElementFactoryMake(videosrc, "source")
-	if videosrc == "videotestsrc" {
+	var source *gst.Element
+	if device == nil {
+		source, _ = gst.ElementFactoryMake("videotestsrc", "source")
 		source.SetObject("is-live", true)
 		source.SetObject("pattern", 18)
 		source.SetObject("animation-mode", 1)
 		source.SetObject("motion", 1)
+	} else {
+		source, _ = gst.ElementFactoryMake("v4l2src", "source")
+		source.SetObject("device", *device)
 	}
 
 	filter, _ := gst.ElementFactoryMake("capsfilter", "filter")

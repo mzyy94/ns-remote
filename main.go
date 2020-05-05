@@ -12,16 +12,23 @@ import (
 
 func main() {
 	var (
-		videosrc = flag.String("video", "videotestsrc", "gstreamer video src")
-		audiosrc = flag.String("audio", "audiotestsrc", "gstreamer audio src")
+		demo     = flag.Bool("demo", false, "use videotestsrc and audiotestsrc for A/V input")
+		videosrc = flag.String("video", "/dev/video0", "v4l2 src device")
+		audiosrc = flag.String("audio", "hw:0,0", "alsa src device")
 		device   = flag.String("device", "/dev/hidg0", "simulating hid gadget path")
 		name     = flag.String("name", "procon", "configfs directory name")
 	)
 	flag.Parse()
+	if *demo {
+		videosrc = nil
+		audiosrc = nil
+	}
+
 	if err := stream.CheckGStreamerPlugins(); err != nil {
 		log.Fatal(err)
 	}
-	mediaSource := stream.NewMediaSource(*videosrc, *audiosrc)
+
+	mediaSource := stream.NewMediaSource(videosrc, audiosrc)
 	controller := nscon.NewController(*device, *name)
 
 	server.StartHTTPServer(mediaSource, controller)
