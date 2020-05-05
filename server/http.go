@@ -13,7 +13,7 @@ import (
 	"github.com/pion/webrtc/v2"
 )
 
-var mSource stream.MediaSource
+var mSource *stream.MediaSource
 
 func webRTCOfferHandler(w http.ResponseWriter, r *http.Request) {
 	var offer webrtc.SessionDescription
@@ -40,7 +40,7 @@ func webRTCOfferHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // StartHTTPServer is..
-func StartHTTPServer(mediaSource stream.MediaSource) {
+func StartHTTPServer(mediaSource *stream.MediaSource) {
 	mSource = mediaSource
 
 	r := mux.NewRouter()
