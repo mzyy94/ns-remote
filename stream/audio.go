@@ -8,11 +8,13 @@ import (
 type AudioPipeline = gst.Pipeline
 
 // NewAudioPipeline is..
-func NewAudioPipeline() *AudioPipeline {
+func NewAudioPipeline(audiosrc string) *AudioPipeline {
 	pipeline, _ := gst.PipelineNew("audio-pipeline")
 
-	source, _ := gst.ElementFactoryMake("audiotestsrc", "source")
-	source.SetObject("is-live", true)
+	source, _ := gst.ElementFactoryMake(audiosrc, "source")
+	if audiosrc == "audiotestsrc" {
+		source.SetObject("is-live", true)
+	}
 
 	convert, _ := gst.ElementFactoryMake("audioconvert", "convert")
 	resample, _ := gst.ElementFactoryMake("audioresample", "resample")
