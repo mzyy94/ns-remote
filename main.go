@@ -16,7 +16,6 @@ func main() {
 		videosrc = flag.String("video", "/dev/video0", "v4l2 src device")
 		audiosrc = flag.String("audio", "hw:0,0", "alsa src device")
 		device   = flag.String("device", "/dev/hidg0", "simulating hid gadget path")
-		name     = flag.String("name", "procon", "configfs directory name")
 	)
 	flag.Parse()
 	if *demo {
@@ -29,7 +28,7 @@ func main() {
 	}
 
 	mediaSource := stream.NewMediaSource(videosrc, audiosrc)
-	controller := nscon.NewController(*device, *name)
+	controller := nscon.NewController(*device)
 
 	server.StartHTTPServer(mediaSource, controller)
 }
