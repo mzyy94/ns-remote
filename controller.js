@@ -361,6 +361,9 @@ const init = () => {
   const capture = new Button(app, "capture", 300, 150);
   const home = new Button(app, "home", clientWidth - 300, 150);
 
+  const leftJoyPress = new Button(app, "press", 300, 250);
+  const rightJoyPress = new Button(app, "press", clientWidth - 300, 250);
+
   const socket = new WebSocket(`ws://${location.host}/controller`);
 
   let requestId;
@@ -378,8 +381,8 @@ const init = () => {
         ...capture.input
       },
       stick: {
-        left: leftJoy.input,
-        right: rightJoy.input
+        left: {...leftJoy.input, ...leftJoyPress.input},
+        right: {...rightJoy.input, ...rightJoyPress.input}
       }
     };
     socket.send(JSON.stringify(inputs));
