@@ -39,7 +39,6 @@ pc.onicecandidate = event => {
 
 pc.addTransceiver("video", { direction: "recvonly" });
 pc.addTransceiver("audio", { direction: "recvonly" });
-pc.createDataChannel("heartbeat");
 
 pc.createOffer()
   .then(d => pc.setLocalDescription(d))

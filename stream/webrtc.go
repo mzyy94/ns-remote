@@ -82,14 +82,6 @@ func (m *WebRTCStreamer) Setup(offer webrtc.SessionDescription) (*webrtc.Session
 		return nil, err
 	}
 
-	// Check connection health with data channel heart beat
-	m.peerConnection.OnDataChannel(func(d *webrtc.DataChannel) {
-		d.OnClose(func() {
-			log.Printf("Close %s on data channel event\n", stats.ID)
-			m.peerConnection.Close()
-		})
-	})
-
 	// Set the remote SessionDescription
 	err = m.peerConnection.SetRemoteDescription(offer)
 	if err != nil {
