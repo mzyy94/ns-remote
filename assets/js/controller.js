@@ -339,6 +339,7 @@ const init = () => {
     view: document.querySelector("canvas"),
     transparent: true,
     resolution: window.devicePixelRatio || 1,
+    resizeTo: window,
     autoResize: true
   });
 
