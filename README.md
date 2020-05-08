@@ -39,13 +39,18 @@ libcomposite
 
 ### H2C-RPI-B01 Board
 
-Connect H2C-RPI-B01 board to Raspberry Pi.
+Connect H2C-RPI-B01 board to Raspberry Pi and run the following command (every time before launch).
+
+```
+v4l2-ctl --set-edid=file=1280P30EDID.txt
+v4l2-ctl --set-dv-bt-timings query
+```
 
 See [HDMI入力をRaspberry Piで駆使する - 犬アイコンのみっきー](https://mzyy94.com/blog/2020/04/10/raspberrypi-hdmi-input/#%E3%82%AD%E3%83%A3%E3%83%97%E3%83%81%E3%83%A3%E3%83%BC%E3%83%9C%E3%83%BC%E3%83%89) for more details.
 
 ### Add Pro Controller USB Gadget with UAC Audio
 
-Run [procon_audio.sh](https://gist.github.com/mzyy94/02bcd9d843c77896803c4cd0c4d9b640#file-procon_audio-sh) with `sudo`.
+Run [procon_audio.sh](https://gist.github.com/mzyy94/02bcd9d843c77896803c4cd0c4d9b640#file-procon_audio-sh) with `sudo` (every time after reboot).
 
 For more details, see links below
 - [UAC GadgetでNintendo Switchの音声出力をRaspberry Piに取り込む - 犬アイコンのみっきー](https://mzyy94.com/blog/2020/04/17/nintendo-switch-audio-uac-gadget/#pro-controller--uac)
