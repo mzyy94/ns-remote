@@ -45,6 +45,6 @@ pc.createOffer()
   .then(d => pc.setLocalDescription(d))
   .catch(console.error);
 
-document.addEventListener("click", () => {
+window.addEventListener("click", () => {
   document.querySelector("video").muted = false;
 }, {once: true});
