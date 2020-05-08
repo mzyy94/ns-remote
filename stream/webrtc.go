@@ -36,8 +36,13 @@ func (m *WebRTCStreamer) Setup(offer webrtc.SessionDescription) (*webrtc.Session
 		return nil, err
 	}
 
+	stats, ok := m.peerConnection.GetStats().GetConnectionStats(m.peerConnection)
+	if !ok {
+		stats.ID = "unknoown"
+	}
+
 	m.peerConnection.OnICEConnectionStateChange(func(connectionState webrtc.ICEConnectionState) {
-		log.Printf("Connection State has changed %s \n", connectionState.String())
+		log.Printf("State of %s: %s \n", stats.ID, connectionState.String())
 	})
 
 	// Create a video track
@@ -80,6 +85,7 @@ func (m *WebRTCStreamer) Setup(offer webrtc.SessionDescription) (*webrtc.Session
 	// Check connection health with data channel heart beat
 	m.peerConnection.OnDataChannel(func(d *webrtc.DataChannel) {
 		d.OnClose(func() {
+			log.Printf("Close %s on data channel event\n", stats.ID)
 			m.peerConnection.Close()
 		})
 	})
