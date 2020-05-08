@@ -29,6 +29,7 @@ func webRTCOfferHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "{\"error\": \"%s\"}", err.Error())
+		return
 	}
 
 	if mSource.IsLinked {
