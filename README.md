@@ -2,7 +2,7 @@
 
 Play Nintendo Switch anyware
 
-![icon](nsremote@2x.png)
+![icon](assets/image/nsremote@2x.png)
 
 ## Requirements
 
