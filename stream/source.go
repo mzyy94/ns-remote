@@ -4,7 +4,6 @@ import (
 	"log"
 	"math"
 	"sync"
-	"time"
 
 	"github.com/notedit/gst"
 	"github.com/pion/webrtc/v2"
@@ -70,31 +69,12 @@ func startSampleTransfer(pipeline *gst.Pipeline, track *webrtc.Track, stop chan 
 	sink := pipeline.GetByName("sink")
 	waitGroup.Add(1)
 
-	bus := pipeline.GetBus()
-
 	go func() {
 		defer func() {
 			pipeline.SetState(gst.StateNull)
 			waitGroup.Done()
 		}()
 
-	Loop:
-		for {
-			if !bus.HavePending() {
-				return
-			}
-			msg := bus.Pop()
-			switch msg.GetType() {
-			case gst.MessageStateChanged:
-				break Loop
-			case gst.MessageStreamStart:
-				break Loop
-			case gst.MessageError:
-				pipeline.SetState(gst.StateNull)
-				time.Sleep(3 * time.Second)
-				pipeline.SetState(gst.StatePlaying)
-			}
-		}
 		log.Printf("-- start sample transfer of track %s\n", track.Label())
 
 		for {
