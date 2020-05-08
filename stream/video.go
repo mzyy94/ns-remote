@@ -24,7 +24,7 @@ func NewVideoPipeline(device *string) *VideoPipeline {
 	}
 
 	filter, _ := gst.ElementFactoryMake("capsfilter", "filter")
-	rawVideoCap := gst.CapsFromString("video/x-raw,width=1280,height=720")
+	rawVideoCap := gst.CapsFromString("video/x-raw,width=1280,height=720,framerate=30/1")
 	filter.SetObject("caps", rawVideoCap)
 
 	var encoder *gst.Element
