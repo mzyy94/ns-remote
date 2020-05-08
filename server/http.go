@@ -24,7 +24,11 @@ func webRTCOfferHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	mStreamer := stream.WebRTCStreamer{}
+	if mSource.IsLinked {
+		mSource.Unlink()
+	}
+
+	mStreamer := &stream.WebRTCStreamer{}
 	answer, err := mStreamer.Setup(offer)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -32,9 +36,6 @@ func webRTCOfferHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if mSource.IsLinked {
-		mSource.Unlink()
-	}
 	mSource.Link(mStreamer)
 
 	w.WriteHeader(http.StatusOK)

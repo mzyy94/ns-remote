@@ -19,6 +19,7 @@ type MediaSource struct {
 	waitGroup     sync.WaitGroup
 	mutex         sync.Mutex
 	IsLinked      bool
+	streamer      *WebRTCStreamer
 }
 
 // NewMediaSource is..
@@ -30,7 +31,7 @@ func NewMediaSource(videosrc, audiosrc *string) *MediaSource {
 }
 
 // Link is..
-func (p *MediaSource) Link(mediaStreamer WebRTCStreamer) {
+func (p *MediaSource) Link(mediaStreamer *WebRTCStreamer) {
 	defer p.mutex.Unlock()
 	p.mutex.Lock()
 	if p.IsLinked {
@@ -48,6 +49,7 @@ func (p *MediaSource) Link(mediaStreamer WebRTCStreamer) {
 		}
 	})
 	p.IsLinked = true
+	p.streamer = mediaStreamer
 }
 
 // Unlink is..
@@ -61,6 +63,13 @@ func (p *MediaSource) Unlink() {
 	close(p.videoChannel)
 	close(p.audioChannel)
 	p.waitGroup.Wait()
+
+	log.Printf("* last stream state: %s\n", p.streamer.peerConnection.ConnectionState().String())
+
+	if p.streamer.peerConnection.ConnectionState() != webrtc.PeerConnectionStateClosed {
+		p.streamer.peerConnection.Close()
+	}
+
 	p.IsLinked = false
 }
 
