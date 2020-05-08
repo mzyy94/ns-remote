@@ -75,7 +75,7 @@ func startSampleTransfer(pipeline *gst.Pipeline, track *webrtc.Track, stop chan 
 			waitGroup.Done()
 		}()
 
-		log.Printf("-- start sample transfer of track %s\n", track.Label())
+		log.Printf("-- start sample transfer of track %s\n", track.Kind().String())
 
 		for {
 			sample, err := sink.PullSample()
