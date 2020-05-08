@@ -68,24 +68,29 @@ func startSampleTransfer(pipeline *gst.Pipeline, track *webrtc.Track, stop chan 
 	pipeline.SetState(gst.StatePlaying)
 	sink := pipeline.GetByName("sink")
 	waitGroup.Add(1)
+	sampleChan := make(chan gst.Sample)
+
+	log.Printf("-- start sample transfer of track %s\n", track.Kind().String())
 
 	go func() {
-		defer func() {
-			pipeline.SetState(gst.StateNull)
-			waitGroup.Done()
-		}()
-
-		log.Printf("-- start sample transfer of track %s\n", track.Kind().String())
-
 		for {
 			sample, err := sink.PullSample()
 			if err != nil {
-				panic(err)
+				log.Printf("Pull error on track %s: %s", track.Kind().String(), err.Error())
+				return
 			}
+			sampleChan <- *sample
+		}
+	}()
+
+	go func() {
+		for {
 			select {
 			case <-stop:
+				pipeline.SetState(gst.StateNull)
+				waitGroup.Done()
 				return
-			default:
+			case sample := <-sampleChan:
 				samples := uint32(math.Round(float64(track.Codec().ClockRate) * (float64(sample.Duration) / 1000000000)))
 				if err := track.WriteSample(media.Sample{Data: sample.Data, Samples: samples}); err != nil {
 					log.Println(err)
