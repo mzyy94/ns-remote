@@ -11,11 +11,13 @@ Play Nintendo Switch anyware
 - HDMI Cable
 - Raspberry Pi 4 Model B
 - [H2C-RPI-B01] or [B101]
-- USB 3.0 A to C Cable
+- USB 3.0 A to C Cable [^1]
 - Powered USB 3.0 Hub [^1]
 
 [H2C-RPI-B01]: https://mzyy94.com/blog/2020/04/10/raspberrypi-hdmi-input/#h2c-rpi-b01
 [B101]: https://auvidea.eu/b101-hdmi-to-csi-2-bridge-15-pin-fpc/
+
+[^1]: https://mzyy94.com/blog/2020/04/17/nintendo-switch-audio-uac-gadget/#%E6%98%A0%E5%83%8F%E3%81%A8%E9%9F%B3%E5%A3%B0%E3%82%92webrtc
 
 ## Pi Setup
 
@@ -46,7 +48,7 @@ v4l2-ctl --set-edid=file=720P30EDID.txt
 v4l2-ctl --set-dv-bt-timings query
 ```
 
-See [HDMI入力をRaspberry Piで駆使する - 犬アイコンのみっきー](https://mzyy94.com/blog/2020/04/10/raspberrypi-hdmi-input/#%E3%82%AD%E3%83%A3%E3%83%97%E3%83%81%E3%83%A3%E3%83%BC%E3%83%9C%E3%83%BC%E3%83%89) for more details.
+See [スマホでNintendo Switchのゲームをする - 犬アイコンのみっきー](https://mzyy94.com/blog/2020/05/11/play-nintendo-switch-on-smartphone/#hdmi%E5%85%A5%E5%8A%9B%E3%82%92%E6%89%B1%E3%81%86) for more details.
 
 ### Add Pro Controller USB Gadget with UAC Audio
 
