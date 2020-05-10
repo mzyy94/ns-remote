@@ -4,10 +4,10 @@ import (
 	"github.com/notedit/gst"
 )
 
-// VideoPipeline is..
+// VideoPipeline is an alias of Pipeline from Gstramer
 type VideoPipeline = gst.Pipeline
 
-// NewVideoPipeline is..
+// NewVideoPipeline constructs VideoPipeline from v4l2 device path
 func NewVideoPipeline(device *string) *VideoPipeline {
 	pipeline, _ := gst.PipelineNew("video-pipeline")
 

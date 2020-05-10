@@ -42,7 +42,7 @@ func webRTCOfferHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(&answer)
 }
 
-// StartHTTPServer is..
+// StartHTTPServer starts HTTP server
 func StartHTTPServer(mediaSource *stream.MediaSource, con *nscon.Controller) {
 	mSource = mediaSource
 	controller = con

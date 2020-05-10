@@ -4,10 +4,10 @@ import (
 	"github.com/notedit/gst"
 )
 
-// AudioPipeline is..
+// AudioPipeline is an alias of Pipeline from Gstramer
 type AudioPipeline = gst.Pipeline
 
-// NewAudioPipeline is..
+// NewAudioPipeline constructs AudioPipeline from alsa device name
 func NewAudioPipeline(device *string) *AudioPipeline {
 	pipeline, _ := gst.PipelineNew("audio-pipeline")
 

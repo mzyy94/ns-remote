@@ -10,7 +10,7 @@ import (
 	"github.com/pion/webrtc/v2/pkg/media"
 )
 
-// MediaSource is..
+// MediaSource is used to control pipelines
 type MediaSource struct {
 	videoPipeline *VideoPipeline
 	audioPipeline *AudioPipeline
@@ -22,7 +22,7 @@ type MediaSource struct {
 	streamer      *WebRTCStreamer
 }
 
-// NewMediaSource is..
+// NewMediaSource creates MediaSource from audio/video device names
 func NewMediaSource(videosrc, audiosrc *string) *MediaSource {
 	return &MediaSource{
 		videoPipeline: NewVideoPipeline(videosrc),
@@ -30,7 +30,7 @@ func NewMediaSource(videosrc, audiosrc *string) *MediaSource {
 	}
 }
 
-// Link is..
+// Link connects media source and stream outputs
 func (p *MediaSource) Link(mediaStreamer *WebRTCStreamer) {
 	defer p.mutex.Unlock()
 	p.mutex.Lock()
@@ -52,7 +52,7 @@ func (p *MediaSource) Link(mediaStreamer *WebRTCStreamer) {
 	p.streamer = mediaStreamer
 }
 
-// Unlink is..
+// Unlink makes stop streaming
 func (p *MediaSource) Unlink() {
 	defer p.mutex.Unlock()
 	p.mutex.Lock()
@@ -109,7 +109,7 @@ func startSampleTransfer(pipeline *gst.Pipeline, track *webrtc.Track, stop chan 
 	}()
 }
 
-// CheckGStreamerPlugins is..
+// CheckGStreamerPlugins returns whether the GStreamer can be used
 func CheckGStreamerPlugins() error {
 	return gst.CheckPlugins([]string{
 		"videotestsrc", "x264", "app",

@@ -8,14 +8,14 @@ import (
 	"github.com/pion/webrtc/v2"
 )
 
-// WebRTCStreamer is..
+// WebRTCStreamer contains peer and track informations to accept streams
 type WebRTCStreamer struct {
 	peerConnection *webrtc.PeerConnection
 	VideoTrack     *webrtc.Track
 	AudioTrack     *webrtc.Track
 }
 
-// Setup is ..
+// Setup creates an answer from SDP offer
 func (m *WebRTCStreamer) Setup(offer webrtc.SessionDescription) (*webrtc.SessionDescription, error) {
 	// WebRTC setup
 	config := webrtc.Configuration{
@@ -103,7 +103,6 @@ func (m *WebRTCStreamer) Setup(offer webrtc.SessionDescription) (*webrtc.Session
 	return &answer, nil
 }
 
-// findCodecOfType is..
 func findCodecOfType(mediaEngine webrtc.MediaEngine, kind webrtc.RTPCodecType, codecName string) (*webrtc.RTPCodec, error) {
 	codecs := mediaEngine.GetCodecsByKind(kind)
 	for _, codec := range codecs {
