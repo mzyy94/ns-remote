@@ -84,6 +84,7 @@ sudo ./ns-remote -audio hw:1,0 -video /dev/video1
 ## Limitations
 
 - Wake-up is not supported yet
+  - Must set up Powered-On Nintendo Switch in the Dock.
 
 ## License
 
