@@ -42,7 +42,7 @@ libcomposite
 Connect H2C-RPI-B01 board to Raspberry Pi and run the following command (every time before launch).
 
 ```
-v4l2-ctl --set-edid=file=1280P30EDID.txt
+v4l2-ctl --set-edid=file=720P30EDID.txt
 v4l2-ctl --set-dv-bt-timings query
 ```
 
