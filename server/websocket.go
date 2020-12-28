@@ -21,7 +21,9 @@ func controllerHandler(w http.ResponseWriter, r *http.Request) {
 	defer c.Close()
 
 	defer controller.Close()
+	log.Println("Connecting to controller..")
 	controller.Connect()
+	log.Println("Connected to controller")
 
 	for {
 		_, message, err := c.ReadMessage()
